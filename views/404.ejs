@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 | <%= typeof siteName !== 'undefined' ? siteName : 'Blog' %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-[#0a0a0a] text-gray-100 min-h-screen flex items-center justify-center">
+  <div class="text-center px-4">
+    <h1 class="text-6xl font-bold text-red-500 mb-4">404</h1>
+    <p class="text-xl text-gray-400 mb-8">Page not found</p>
+    <a href="/" class="inline-flex px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-medium rounded-lg transition">Back to Home</a>
+  </div>
+  <%- include('partials/back-to-top') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

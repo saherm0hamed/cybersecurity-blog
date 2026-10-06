@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <title><%= title ? title + ' | ' : '' %><%= siteName %></title>
+  <meta name="description" content="<%= typeof description !== 'undefined' ? description : siteTagline %>">
+  <meta name="theme-color" content="#0a0a0a">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            dark: {
+              900: '#0a0a0a',
+              800: '#111111',
+              700: '#1a1a1a',
+              600: '#222222',
+              500: '#2a2a2a',
+            },
+            accent: {
+              red: '#D90000',
+              pink: '#ec4899',
+              green: '#22c55e',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-dark-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col">
+  <%- include('../partials/header') %>
+
+  <main class="flex-1">
+    <%- body %>
+  </main>
+
+  <%- include('../partials/footer') %>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

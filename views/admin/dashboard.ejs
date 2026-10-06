@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-[#0a0a0a] text-gray-100 min-h-screen">
+  <%- include('../partials/admin-header') %>
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <% if (typeof success !== 'undefined' && success.length) { %><div class="mb-4 p-3 bg-green-900/40 border border-green-700 text-green-300 rounded-lg text-sm"><%= success %></div><% } %>
+    <h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-10">
+      <div class="bg-[#1a1a1a] border border-[#222] rounded-xl p-4">
+        <p class="text-2xl font-bold"><%= stats.posts %></p>
+        <p class="text-xs text-gray-500">Total Posts</p>
+      </div>
+      <div class="bg-[#1a1a1a] border border-[#222] rounded-xl p-4">
+        <p class="text-2xl font-bold text-green-400"><%= stats.published %></p>
+        <p class="text-xs text-gray-500">Published</p>
+      </div>
+      <div class="bg-[#1a1a1a] border border-[#222] rounded-xl p-4">
+        <p class="text-2xl font-bold text-yellow-400"><%= stats.drafts %></p>
+        <p class="text-xs text-gray-500">Drafts</p>
+      </div>
+      <div class="bg-[#1a1a1a] border border-[#222] rounded-xl p-4">
+        <p class="text-2xl font-bold"><%= stats.certificates %></p>
+        <p class="text-xs text-gray-500">Certificates</p>
+      </div>
+      <div class="bg-[#1a1a1a] border border-[#222] rounded-xl p-4">
+        <p class="text-2xl font-bold"><%= stats.projects %></p>
+        <p class="text-xs text-gray-500">Projects</p>
+      </div>
+      <div class="bg-[#1a1a1a] border border-[#222] rounded-xl p-4">
+        <p class="text-2xl font-bold"><%= stats.categories %></p>
+        <p class="text-xs text-gray-500">Categories</p>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-3 mb-8">
+      <a href="/admin/posts/new" class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-medium rounded-lg"><span class="material-icons text-base" aria-hidden="true">post_add</span>New Post</a>
+      <a href="/admin/certificates/new" class="inline-flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] border border-[#333] hover:bg-[#222] text-sm rounded-lg"><span class="material-icons text-base" aria-hidden="true">workspace_premium</span>Certificate</a>
+      <a href="/admin/projects/new" class="inline-flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] border border-[#333] hover:bg-[#222] text-sm rounded-lg"><span class="material-icons text-base" aria-hidden="true">add_box</span>Project</a>
+      <a href="/admin/categories" class="inline-flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] border border-[#333] hover:bg-[#222] text-sm rounded-lg"><span class="material-icons text-base" aria-hidden="true">category</span>Manage categories</a>
+      <a href="/admin/fingerprints" class="inline-flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] border border-[#333] hover:bg-[#222] text-sm rounded-lg"><span class="material-icons text-base" aria-hidden="true">fingerprint</span>View fingerprints</a>
+    </div>
+    <h2 class="text-lg font-semibold mb-4">Recent Posts</h2>
+    <div class="bg-[#1a1a1a] border border-[#222] rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-[#111] text-gray-400 text-left">
+          <tr>
+            <th class="px-4 py-3">Title</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Updated</th>
+            <th class="px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% recentPosts.forEach(function(p) { %>
+            <tr class="border-t border-[#222]">
+              <td class="px-4 py-3"><%= p.title %></td>
+              <td class="px-4 py-3"><span class="<%= p.status === 'published' ? 'text-green-400' : 'text-yellow-400' %>"><%= p.status %></span></td>
+              <td class="px-4 py-3 text-gray-500"><%= new Date(p.updated_at).toLocaleDateString() %></td>
+              <td class="px-4 py-3 space-x-2">
+                <a href="/admin/posts/<%= p.id %>/edit" class="inline-flex items-center gap-1 text-red-500 hover:underline"><span class="material-icons text-base" aria-hidden="true">edit</span>Edit</a>
+                <form method="POST" action="/admin/posts/<%= p.id %>/delete" class="inline" data-confirm="Delete this post? This will permanently remove it from the site.">
+                  <button type="submit" class="inline-flex items-center gap-1 text-gray-500 hover:text-red-400"><span class="material-icons text-base" aria-hidden="true">delete</span>Delete</button>
+                </form>
+              </td>
+
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

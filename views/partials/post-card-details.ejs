@@ -1,0 +1,18 @@
+<div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-dark-600 pt-3 text-xs text-gray-400" aria-label="Post details">
+  <span class="inline-flex items-center gap-1.5">
+    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg>
+    <%= post.reading_minutes %> min read
+  </span>
+  <span class="inline-flex items-center gap-1.5">
+    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+    <%= post.view_count %> <%= post.view_count === 1 ? 'view' : 'views' %>
+  </span>
+  <span class="inline-flex items-center gap-1.5">
+    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.8 8.8c0 5.4-8.8 10.2-8.8 10.2S3.2 14.2 3.2 8.8A4.3 4.3 0 0 1 12 6.7a4.3 4.3 0 0 1 8.8 2.1Z"/></svg>
+    <%= post.like_count %> <%= post.like_count === 1 ? 'like' : 'likes' %>
+  </span>
+  <span class="inline-flex items-center gap-1.5">
+    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.6-3.4A7.5 7.5 0 1 1 20 11.5Z"/></svg>
+    <%= post.comment_count %> <%= post.comment_count === 1 ? 'comment' : 'comments' %>
+  </span>
+</div>

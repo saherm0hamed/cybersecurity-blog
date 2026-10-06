@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= siteName %> | <%= siteTagline %></title>
+  <meta name="description" content="<%= siteTagline %>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            dark: { 900: '#0a0a0a', 800: '#111111', 700: '#1a1a1a', 600: '#222222', 500: '#2a2a2a' },
+            accent: { red: '#D90000', pink: '#ec4899', green: '#22c55e' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-dark-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col">
+  <%- include('partials/header') %>
+
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <% if (posts.length === 0) { %>
+      <div class="text-center py-20">
+        <h1 class="text-3xl font-bold mb-4">Welcome to <%= siteName %></h1>
+        <p class="text-gray-400 mb-8">No posts yet. Head to the <a href="/admin" class="text-red-500 hover:underline">admin panel</a> to create your first post.</p>
+      </div>
+    <% } else { %>
+      <!-- Featured + Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+        <!-- Featured large card -->
+        <% if (featured) { %>
+        <article class="lg:col-span-2 post-card home-featured-card relative rounded-2xl overflow-hidden border border-dark-600 group">
+          <a href="/post/<%= featured.slug %>" class="block">
+            <div class="relative aspect-video overflow-hidden bg-[#0a0a0a]">
+              <% if (featured.cover_image) { %>
+                <img src="<%= featured.cover_image %>" alt="<%= featured.title %>" class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
+              <% } else { %>
+                <div class="flex h-full w-full items-center justify-center">
+                  <svg class="w-24 h-24 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+              <% } %>
+            </div>
+            <div class="featured-overlay-content home-featured-content p-5 sm:p-8">
+              <% if (featured.category_name) { %>
+                <span class="badge text-white mb-3 self-start" style="background-color: <%= featured.category_color || '#6b7280' %>"><%= featured.category_name %></span>
+              <% } %>
+              <h2 class="text-3xl sm:text-4xl font-bold text-white mb-2 leading-tight drop-shadow-md"><%= featured.title %></h2>
+              <% if (featured.excerpt) { %><p class="text-gray-300 text-sm sm:text-base line-clamp-2"><%= featured.excerpt %></p><% } %>
+              <%- include('partials/post-card-details', { post: featured }) %>
+              <div class="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs text-gray-300">
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <span class="inline-flex items-center gap-1.5">
+                    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 3v3m8-3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13H4V6a1 1 0 0 1 1-1Z"/></svg>
+                    <%= featured.published_at ? new Date(featured.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '' %>
+                  </span>
+                  <span class="inline-flex items-center gap-1.5">
+                    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 21v-1a7 7 0 0 1 14 0v1"/></svg>
+                    <%= featured.author %>
+                  </span>
+                </div>
+                <span class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition group-hover:bg-red-500">Read article <span aria-hidden="true">→</span></span>
+              </div>
+            </div>
+          </a>
+        </article>
+        <% } %>
+
+        <!-- Side card (second post) -->
+        <% if (posts[1]) { %>
+        <article class="post-card bg-dark-700 rounded-2xl overflow-hidden border border-dark-600 flex flex-col">
+          <a href="/post/<%= posts[1].slug %>" class="block flex-1">
+            <div class="aspect-video bg-dark-800 overflow-hidden">
+              <% if (posts[1].cover_image) { %>
+                <img src="<%= posts[1].cover_image %>" alt="<%= posts[1].title %>" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+              <% } else { %>
+                <div class="w-full h-full flex items-center justify-center bg-dark-800">
+                  <svg class="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+              <% } %>
+            </div>
+            <div class="p-5">
+              <% if (posts[1].category_name) { %>
+                <span class="badge text-white mb-3" style="background-color: <%= posts[1].category_color || '#6b7280' %>"><%= posts[1].category_name %></span>
+              <% } %>
+              <h3 class="text-lg font-bold text-white mb-2 line-clamp-2 hover:text-red-400 transition"><%= posts[1].title %></h3>
+              <% if (posts[1].excerpt) { %>
+                <p class="text-gray-400 text-sm line-clamp-3 mb-3"><%= posts[1].excerpt %></p>
+              <% } %>
+              <div class="flex items-center gap-3 text-xs text-gray-500">
+                <span><%= posts[1].published_at ? new Date(posts[1].published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '' %></span>
+                <span><%= posts[1].author %></span>
+              </div>
+              <%- include('partials/post-card-details', { post: posts[1] }) %>
+            </div>
+          </a>
+        </article>
+        <% } %>
+      </div>
+
+      <!-- Rest of posts grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% posts.slice(2).forEach(function(post) { %>
+          <article class="post-card bg-dark-700 rounded-2xl overflow-hidden border border-dark-600">
+            <a href="/post/<%= post.slug %>" class="block">
+              <div class="aspect-video bg-dark-800 overflow-hidden">
+                <% if (post.cover_image) { %>
+                  <img src="<%= post.cover_image %>" alt="<%= post.title %>" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+                <% } else { %>
+                  <div class="w-full h-full flex items-center justify-center">
+                    <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  </div>
+                <% } %>
+              </div>
+              <div class="p-5">
+                <% if (post.category_name) { %>
+                  <span class="badge text-white mb-2" style="background-color: <%= post.category_color || '#6b7280' %>"><%= post.category_name %></span>
+                <% } %>
+                <h3 class="text-base font-bold text-white mb-2 line-clamp-2 hover:text-red-400 transition"><%= post.title %></h3>
+                <% if (post.excerpt) { %>
+                  <p class="text-gray-400 text-sm line-clamp-2 mb-3"><%= post.excerpt %></p>
+                <% } %>
+                <div class="flex items-center gap-3 text-xs text-gray-500">
+                  <span><%= post.published_at ? new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '' %></span>
+                  <span><%= post.author %></span>
+                </div>
+                <%- include('partials/post-card-details', { post }) %>
+              </div>
+            </a>
+          </article>
+        <% }) %>
+      </div>
+
+      <div class="mt-12 text-center">
+        <a href="/posts" class="inline-flex items-center px-6 py-3 bg-dark-700 hover:bg-dark-600 border border-dark-500 text-white font-medium rounded-lg transition">
+          View all articles →
+        </a>
+      </div>
+    <% } %>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-[#0a0a0a] text-gray-100 min-h-screen">
+  <%- include('../../partials/admin-header') %>
+  <main class="max-w-2xl mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6"><%= title %></h1>
+    <form method="POST" action="<%= project ? '/admin/projects/' + project.id : '/admin/projects' %>" enctype="multipart/form-data" class="space-y-4">
+      <div><label class="block text-sm text-gray-400 mb-1">Title *</label><input type="text" name="title" required value="<%= project ? project.title : '' %>" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white"></div>
+      <div><label class="block text-sm text-gray-400 mb-1">Short Description</label><input type="text" name="short_description" value="<%= project ? project.short_description || '' : '' %>" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white"></div>
+      <div><label class="block text-sm text-gray-400 mb-1">Content (Markdown)</label><textarea name="content" rows="8" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white font-mono text-sm"><%= project ? project.content || '' : '' %></textarea></div>
+      <div><label class="block text-sm text-gray-400 mb-1">Tech Stack (comma separated)</label><input type="text" name="tech_stack" value="<%= project ? project.tech_stack || '' : '' %>" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white"></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="block text-sm text-gray-400 mb-1">GitHub URL</label><input type="url" name="github_url" value="<%= project ? project.github_url || '' : '' %>" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white"></div>
+        <div><label class="block text-sm text-gray-400 mb-1">Demo URL</label><input type="url" name="demo_url" value="<%= project ? project.demo_url || '' : '' %>" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white"></div>
+      </div>
+      <div><label class="block text-sm text-gray-400 mb-1">Status</label>
+        <select name="status" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white">
+          <option value="completed" <%= project && project.status === 'completed' ? 'selected' : '' %>>Completed</option>
+          <option value="in-progress" <%= project && project.status === 'in-progress' ? 'selected' : '' %>>In Progress</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm text-gray-400 mb-1">Cover Image</label>
+        <% if (project && project.cover_image) { %><input type="hidden" name="existing_cover" value="<%= project.cover_image %>"><p class="text-xs text-gray-500 mb-1">Current: <%= project.cover_image %></p><% } %>
+        <input type="file" name="cover_image" accept="image/*" class="text-sm text-gray-400">
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-medium rounded-lg"><span class="material-icons text-base" aria-hidden="true">save</span>Save</button>
+        <a href="/admin/projects" class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#1a1a1a] border border-[#333] rounded-lg text-gray-300"><span class="material-icons text-base" aria-hidden="true">close</span>Cancel</a>
+      </div>
+    </form>
+  </main>
+</body>
+</html>

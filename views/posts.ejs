@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Posts | <%= siteName %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: { dark: { 900: '#0a0a0a', 800: '#111111', 700: '#1a1a1a', 600: '#222222', 500: '#2a2a2a' } }, fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-dark-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col">
+  <%- include('partials/header') %>
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <h1 class="text-3xl font-bold mb-2">All Articles</h1>
+    <p class="text-gray-400 mb-8"><%= total %> posts</p>
+
+    <% if (posts.length) { %>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% posts.forEach(function(post) { %>
+        <article class="post-card bg-dark-700 rounded-2xl overflow-hidden border border-dark-600">
+          <a href="/post/<%= post.slug %>" class="block">
+            <div class="aspect-video bg-dark-800 overflow-hidden">
+              <% if (post.cover_image) { %>
+                <img src="<%= post.cover_image %>" alt="<%= post.title %>" class="w-full h-full object-cover hover:scale-105 transition duration-500">
+              <% } else { %>
+                <div class="w-full h-full flex items-center justify-center"><svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
+              <% } %>
+            </div>
+            <div class="flex flex-1 flex-col p-5">
+              <div>
+                <% if (post.category_name) { %><span class="badge text-white mb-2" style="background-color: <%= post.category_color || '#6b7280' %>"><%= post.category_name %></span><% } %>
+              </div>
+              <h3 class="text-base font-bold text-white mb-2 line-clamp-2 hover:text-red-400 transition"><%= post.title %></h3>
+              <% if (post.excerpt) { %><p class="text-gray-400 text-sm line-clamp-2 mb-3"><%= post.excerpt %></p><% } %>
+              <div class="flex items-center gap-3 text-xs text-gray-500">
+                <span><%= post.published_at ? new Date(post.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '' %></span>
+                <span><%= post.author %></span>
+              </div>
+              <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-dark-600 pt-3 text-xs text-gray-400" aria-label="Post details">
+                <span class="inline-flex items-center gap-1.5">
+                  <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 2"/></svg>
+                  <%= post.reading_minutes %> min read
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                  <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <%= post.view_count %> <%= post.view_count === 1 ? 'view' : 'views' %>
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                  <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.8 8.8c0 5.4-8.8 10.2-8.8 10.2S3.2 14.2 3.2 8.8A4.3 4.3 0 0 1 12 6.7a4.3 4.3 0 0 1 8.8 2.1Z"/></svg>
+                  <%= post.like_count %> <%= post.like_count === 1 ? 'like' : 'likes' %>
+                </span>
+                <span class="inline-flex items-center gap-1.5">
+                  <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.6-3.4A7.5 7.5 0 1 1 20 11.5Z"/></svg>
+                  <%= post.comment_count %> <%= post.comment_count === 1 ? 'comment' : 'comments' %>
+                </span>
+              </div>
+              <span class="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-red-400">Read article <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+        </article>
+      <% }) %>
+    </div>
+    <% } else { %>
+    <section class="border-y border-dark-600 py-12 text-center" aria-labelledby="empty-posts-title">
+      <h2 id="empty-posts-title" class="text-xl font-semibold text-white">No articles published yet</h2>
+      <p class="mt-2 text-gray-400">Check back soon for new posts.</p>
+    </section>
+    <% } %>
+
+    <% if (totalPages > 1) { %>
+    <div class="mt-10 flex justify-center gap-2">
+      <% if (page > 1) { %><a href="/posts?page=<%= page - 1 %>" class="px-4 py-2 bg-dark-700 border border-dark-500 rounded-lg text-sm hover:bg-dark-600">← Previous</a><% } %>
+      <span class="px-4 py-2 text-sm text-gray-400">Page <%= page %> of <%= totalPages %></span>
+      <% if (page < totalPages) { %><a href="/posts?page=<%= page + 1 %>" class="px-4 py-2 bg-dark-700 border border-dark-500 rounded-lg text-sm hover:bg-dark-600">Next →</a><% } %>
+    </div>
+    <% } %>
+  </main>
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= post.title %> | <%= siteName %></title>
+  <meta name="description" content="<%= post.excerpt || post.title %>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: { dark: { 900: '#0a0a0a', 800: '#111111', 700: '#1a1a1a', 600: '#222222', 500: '#2a2a2a' } }, fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link id="highlight-theme-dark" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link id="highlight-theme-light" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" disabled>
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-dark-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col" data-post-slug="<%= post.slug %>">
+  <%- include('partials/header') %>
+  <div id="reading-progress" class="reading-progress" role="progressbar" aria-label="Post reading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0 percent read">
+    <span></span>
+  </div>
+
+  <main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <!-- Main content -->
+      <article class="lg:col-span-2">
+        <% if (post.category_name) { %>
+          <div class="badge text-white mb-4" style="background-color: <%= post.category_color || '#6b7280' %>"><%= post.category_name %></div>
+        <% } %>
+        <h1 class="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight"><%= post.title %></h1>
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-gray-400 mb-8">
+          <span class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <%= post.published_at ? new Date(post.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '' %>
+          </span>
+          <span class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <%= post.author %>
+          </span>
+          <span><%= readingMinutes %> min read</span>
+          <span><%= post.view_count %> views</span>
+        </div>
+
+        <% if (post.cover_image) { %>
+          <div class="rounded-2xl overflow-hidden mb-8 border border-dark-600">
+            <img src="<%= post.cover_image %>" alt="<%= post.title %>" class="w-full max-h-[480px] object-cover">
+          </div>
+        <% } %>
+
+        <div class="prose-custom">
+          <%- content %>
+        </div>
+
+        <section id="engagement" class="mt-12 border-y border-dark-600 py-8" aria-labelledby="comments-title">
+          <form method="POST" action="/post/<%= post.slug %>/like" class="mb-8" data-like-form>
+            <button type="submit" data-like-button aria-pressed="<%= post.liked_by_visitor %>" class="inline-flex items-center gap-2 border border-dark-500 px-4 py-2.5 text-sm font-medium <%= post.liked_by_visitor ? 'text-red-300 border-red-500/60' : 'text-gray-200 hover:text-white hover:border-gray-400' %> focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-500">
+              <span data-like-icon aria-hidden="true"><%= post.liked_by_visitor ? '♥' : '♡' %></span>
+              <span data-like-label><%= post.liked_by_visitor ? 'Liked' : 'Like this post' %></span>
+              <span class="text-gray-400" data-like-count><%= post.like_count %></span>
+            </button>
+            <p class="sr-only" data-like-feedback role="status" aria-live="polite"></p>
+          </form>
+
+          <% if (error && error.length) { %><p role="alert" class="mb-4 text-sm text-red-300"><%= error %></p><% } %>
+          <% if (success && success.length) { %><p role="status" class="mb-4 text-sm text-green-300"><%= success %></p><% } %>
+          <h2 id="comments-title" class="text-xl font-semibold text-white">Comments (<%= comments.length %>)</h2>
+
+          <form id="comment-form" method="POST" action="/post/<%= post.slug %>/comments" class="mt-5 max-w-2xl space-y-4">
+            <div class="absolute -left-[10000px]" aria-hidden="true">
+              <label for="comment-website">Leave this field blank</label>
+              <input id="comment-website" type="text" name="website" tabindex="-1" autocomplete="off">
+            </div>
+            <div>
+              <label for="comment-name" class="mb-1.5 block text-sm text-gray-300">Name</label>
+              <input id="comment-name" name="name" type="text" required maxlength="60" autocomplete="name" class="w-full border border-dark-500 bg-dark-800 px-3 py-2.5 text-sm text-white focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500">
+            </div>
+            <div>
+              <label for="comment-body" class="mb-1.5 block text-sm text-gray-300">Comment</label>
+              <textarea id="comment-body" name="comment" required maxlength="3000" rows="5" class="w-full border border-dark-500 bg-dark-800 px-3 py-2.5 text-sm text-white focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"></textarea>
+              <p class="mt-1.5 text-xs text-gray-500">Up to 3,000 characters. Comments appear publicly.</p>
+            </div>
+            <button type="submit" class="bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-400">Post comment</button>
+          </form>
+
+          <% if (comments.length) { %>
+            <ol class="mt-8 max-w-2xl divide-y divide-dark-600">
+              <% comments.forEach(function(comment) { %>
+                <li class="py-5">
+                  <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                    <h3 class="font-medium text-white"><%= comment.author %></h3>
+                    <div class="inline-flex items-center gap-3">
+                      <time class="text-xs text-gray-500" datetime="<%= comment.created_at %>"><%= new Date(comment.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %></time>
+                      <% if (user) { %>
+                        <form method="POST" action="/post/<%= post.slug %>/comments/<%= comment.id %>/delete" data-confirm="Delete this comment? This action cannot be undone.">
+                          <button type="submit" class="inline-flex items-center gap-1 text-xs text-red-400 hover:text-red-300"><span class="material-icons text-base" aria-hidden="true">delete</span>Delete</button>
+                        </form>
+                      <% } %>
+                    </div>
+                  </div>
+                  <p class="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-gray-300"><%= comment.body %></p>
+                </li>
+              <% }) %>
+            </ol>
+          <% } else { %>
+            <p class="mt-4 text-sm text-gray-500">No comments yet. Start the conversation.</p>
+          <% } %>
+        </section>
+      </article>
+
+      <!-- Sidebar -->
+      <aside class="post-sidebar space-y-8">
+        <section class="toc-sidebar" data-toc-sidebar hidden aria-labelledby="post-toc-title">
+          <div class="toc-sidebar-panel bg-dark-700 border border-dark-600 rounded-xl p-5">
+            <h2 id="post-toc-title" class="text-sm font-semibold text-white mb-3 uppercase tracking-wider">In this article</h2>
+            <nav aria-label="Table of contents">
+              <ol class="space-y-1.5 text-sm" data-toc-list></ol>
+            </nav>
+          </div>
+        </section>
+
+        <!-- Recent posts -->
+        <div class="bg-dark-700 border border-dark-600 rounded-xl p-5">
+          <h3 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Recent Posts</h3>
+          <ul class="space-y-4">
+            <% recent.forEach(function(r) { %>
+              <li>
+                <a href="/post/<%= r.slug %>" class="block group">
+                  <p class="text-sm text-gray-300 group-hover:text-red-400 transition line-clamp-2"><%= r.title %></p>
+                  <p class="text-xs text-gray-500 mt-1"><%= r.published_at ? new Date(r.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '' %></p>
+                </a>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+
+        
+      </aside>
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

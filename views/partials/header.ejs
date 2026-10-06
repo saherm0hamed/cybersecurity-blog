@@ -1,0 +1,79 @@
+<script>
+  try {
+    if (localStorage.getItem('blog-theme') === 'light') document.documentElement.classList.remove('dark');
+  } catch {}
+</script>
+<header class="site-navbar sticky top-0 z-50 backdrop-blur">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-2 group" aria-label="<%= siteName %> home">
+        <div class="w-8 h-8 flex items-center justify-center">
+
+          <svg class="nav-logo-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <img sizes="32x32" src="/favicon-32x32.png" />
+          </svg>
+
+        </div>
+        <span class="text-lg font-bold tracking-tight">
+          <span class="text-white">saherm</span><span class="text-red-500">Ø</span>hamed
+        </span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-1">
+        <a href="/" class="px-3 py-2 text-sm font-medium rounded-md <%= currentPath === '/' ? 'text-white bg-dark-700' : 'text-gray-400 hover:text-white hover:bg-dark-700' %> transition">Home</a>
+        <a href="/posts" class="px-3 py-2 text-sm font-medium rounded-md <%= currentPath.startsWith('/posts') || currentPath.startsWith('/post') ? 'text-white bg-dark-700' : 'text-gray-400 hover:text-white hover:bg-dark-700' %> transition">Posts</a>
+        
+        <a href="/archive" class="px-3 py-2 text-sm font-medium rounded-md <%= currentPath.startsWith('/archive') ? 'text-white bg-dark-700' : 'text-gray-400 hover:text-white hover:bg-dark-700' %> transition">Archive</a>
+        <a href="/about" class="px-3 py-2 text-sm font-medium rounded-md <%= currentPath === '/about' ? 'text-white bg-dark-700' : 'text-gray-400 hover:text-white hover:bg-dark-700' %> transition">About</a>
+        <% if (admin) { %>
+          <a href="/admin" class="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-500">Admin</a>
+        <% } %>
+      </nav>
+
+      <!-- Search + Lang -->
+      <div class="flex items-center gap-3">
+        <form action="/search" method="GET" class="hidden sm:block">
+          <div class="relative">
+            <input type="search" name="q" aria-label="Search articles" placeholder="Search articles" 
+              class="w-40 lg:w-52 bg-dark-700 border border-dark-500 text-sm text-gray-200 rounded-lg px-3 py-1.5 pl-9 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 placeholder-gray-500">
+            <svg class="w-4 h-4 absolute left-2.5 top-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+        </form>
+
+        <button id="theme-toggle" type="button" role="switch" aria-checked="true" aria-label="Switch to light mode" title="Switch to light mode" class="relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border border-dark-500 bg-dark-700 p-0.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
+          <span class="sr-only">Dark mode</span>
+          <span aria-hidden="true" class="absolute left-1 flex items-center text-amber-300">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+          </span>
+          <span aria-hidden="true" class="absolute right-1 flex items-center text-slate-400">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z"/></svg>
+          </span>
+          <span id="theme-toggle-thumb" aria-hidden="true" class="pointer-events-none absolute left-0.5 top-0.5 h-5 w-5 translate-x-5 rounded-full bg-white shadow transition-transform"></span>
+        </button>
+
+        <!-- Mobile menu button -->
+        <button id="mobile-menu-btn" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu" class="md:hidden p-2 text-gray-400 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-500">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Nav -->
+  <div id="mobile-menu" hidden class="md:hidden border-t border-dark-600 bg-dark-800">
+    <div class="px-4 py-3 space-y-1">
+      <a href="/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-dark-700">Home</a>
+      <a href="/posts" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-dark-700">Posts</a>
+      <a href="/archive" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-dark-700">Archive</a>
+      <a href="/about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-dark-700">About</a>
+      <% if (admin) { %>
+        <a href="/admin" class="block rounded-md bg-red-600 px-3 py-2 text-base font-semibold text-white hover:bg-red-500">Admin</a>
+      <% } %>
+      <form action="/search" method="GET" class="pt-2">
+        <input type="search" name="q" aria-label="Search articles" placeholder="Search articles" class="w-full bg-dark-700 border border-dark-500 text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-red-500">
+      </form>
+    </div>
+  </div>
+</header>

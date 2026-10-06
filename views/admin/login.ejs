@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-[#0a0a0a] text-gray-100 min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-md">
+    <div class="mb-8 text-center">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-full border border-red-500/40 bg-red-500/10 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+        <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 10V8a5 5 0 0 1 10 0v2"></path>
+          <rect x="5" y="10" width="14" height="10" rx="2"></rect>
+        </svg>
+      </div>
+      <p class="mt-4 text-xs font-medium uppercase tracking-[0.22em] text-red-400">Admin Panel</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error.length) { %>
+      <div class="mb-4 px-4 py-3 text-sm text-red-200"><%= error %></div>
+    <% } %>
+
+    <form method="POST" action="/admin/login" class="rounded-2xl border border-[#222] bg-[#111111] p-6 shadow-2xl shadow-black/30">
+      <div class="space-y-5">
+        <div>
+          <label for="username" class="mb-2 block text-sm font-medium text-gray-300">Username</label>
+          <input id="username" type="text" name="username" required autofocus autocomplete="username" class="w-full rounded-xl border border-[#333] bg-[#0b0b0b] px-3 py-2.5 text-white placeholder:text-gray-500 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">
+        </div>
+
+        <div>
+          <label for="password" class="mb-2 block text-sm font-medium text-gray-300">Password</label>
+          <input id="password" type="password" name="password" required autocomplete="current-password" class="w-full rounded-xl border border-[#333] bg-[#0b0b0b] px-3 py-2.5 text-white placeholder:text-gray-500 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20">
+        </div>
+
+        <button type="submit" class="w-full rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/30">
+          <span class="material-icons mr-1 align-middle text-base" aria-hidden="true">login</span>Sign In
+        </button>
+      </div>
+    </form>
+  </div>
+  <%- include('../partials/back-to-top') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>

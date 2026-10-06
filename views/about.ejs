@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About | <%= siteName %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class', theme: { extend: { colors: { dark: { 900: '#0a0a0a', 800: '#111', 700: '#1a1a1a', 600: '#222' } }, fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } } }</script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body class="bg-dark-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col">
+  <%- include('partials/header') %>
+  <main class="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+    <section class="border-b border-dark-600 pb-10 sm:pb-12" aria-labelledby="about-title">
+      <p class="mb-3 text-sm font-semibold uppercase text-red-400">About</p>
+      <h1 id="about-title" class="max-w-4xl text-3xl font-bold leading-tight text-white sm:text-4xl">Offensive Security Engineer <span class="text-gray-400">/ Offensive Tool Developer</span></h1>
+      <div class="mt-6 max-w-3xl space-y-4 text-base leading-7 text-gray-300">
+        <p>Penetration tester with hands-on experience in web, mobile, and network security testing. Skilled in identifying vulnerabilities and developing <strong class="font-semibold text-white">Python-based hacking tools</strong>. Solid backend understanding of APIs, databases, and server-side logic, enabling insight into full-stack security flaws.</p>
+        <p>This blog is my public knowledge base, documenting techniques, CTF writeups, and research notes from real-world engagements and lab work. Everything written here comes from hands-on experience, not theory.</p>
+      </div>
+    </section>
+
+    <section class="border-b border-dark-600 py-10 sm:py-12" aria-labelledby="experience-title">
+      <div class="mb-7">
+        <p class="mb-2 text-xs font-semibold uppercase text-red-400">Career</p>
+        <h2 id="experience-title" class="text-2xl font-bold text-white">Work experience</h2>
+      </div>
+      <div class="space-y-8">
+        <article class="grid gap-2 sm:grid-cols-[190px_minmax(0,1fr)] sm:gap-8">
+          <p class="text-sm font-medium text-gray-400">Dec 2025 — Mar 2026</p>
+          <div>
+            <h3 class="text-lg font-semibold text-white">Offensive Security Engineer Internship</h3>
+            <p class="mt-1 text-sm text-gray-400">Cyber Force LLC <span aria-hidden="true">·</span> Sheraton, Egypt</p>
+            <ul class="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-gray-300 marker:text-red-400">
+              <li>Collaborated with senior penetration testers on real-world client engagements and security assessments.</li>
+              <li>Performed internal and external network vulnerability scans and penetration testing.</li>
+              <li>Conducted security tests on websites and mobile applications for large Egyptian financial companies.</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="grid gap-2 sm:grid-cols-[190px_minmax(0,1fr)] sm:gap-8">
+          <p class="text-sm font-medium text-gray-400">Feb 2025 — May 2025</p>
+          <div>
+            <h3 class="text-lg font-semibold text-white">Penetration Testing &amp; Ethical Hacking Internship</h3>
+            <p class="mt-1 text-sm text-gray-400">National Telecommunication Institute (NTI) <span aria-hidden="true">·</span> Smart Village, Egypt</p>
+            <ul class="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-gray-300 marker:text-red-400">
+              <li>Conducted web application security assessments with Burp Suite, OWASP ZAP, and manual testing techniques.</li>
+              <li>Performed network vulnerability scans and penetration testing using Nmap, Metasploit, and custom Python scripts.</li>
+              <li>Gained hands-on experience with ethical hacking methodologies and industry-standard penetration testing frameworks.</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <div class="grid gap-10 py-10 sm:py-12 lg:grid-cols-2 lg:gap-14">
+      <section aria-labelledby="projects-title">
+        <div class="mb-5">
+          <p class="mb-2 text-xs font-semibold uppercase text-red-400">Selected work</p>
+          <h2 id="projects-title" class="text-2xl font-bold text-white">Projects</h2>
+        </div>
+        <% if (projects.length) { %>
+          <ul class="divide-y divide-dark-600 border-y border-dark-600">
+            <% projects.forEach(function(project) { %>
+              <li class="py-5">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                  <h3 class="text-lg font-semibold text-white"><%= project.title %></h3>
+                  <span class="text-xs text-gray-500"><%= project.status === 'in-progress' ? 'In progress' : 'Completed' %></span>
+                </div>
+                <% if (project.short_description) { %><p class="mt-2 text-sm leading-6 text-gray-300"><%= project.short_description %></p><% } %>
+                <% if (project.tech_stack) { %><p class="mt-3 text-xs text-gray-400"><span class="font-semibold text-gray-300">Tools:</span> <%= project.tech_stack %></p><% } %>
+                <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                  <% if (project.github_url) { %><a class="text-red-400 hover:text-red-300" href="<%= project.github_url %>" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><% } %>
+                  <% if (project.demo_url) { %><a class="text-red-400 hover:text-red-300" href="<%= project.demo_url %>" target="_blank" rel="noopener noreferrer">Live demo <span aria-hidden="true">↗</span></a><% } %>
+                </div>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="border-y border-dark-600 py-5 text-sm text-gray-400">Projects added to the portfolio will appear here.</p>
+        <% } %>
+      </section>
+
+      <section aria-labelledby="certificates-title">
+        <div class="mb-5">
+          <p class="mb-2 text-xs font-semibold uppercase text-red-400">Credentials</p>
+          <h2 id="certificates-title" class="text-2xl font-bold text-white">Certificates</h2>
+        </div>
+        <% if (certificates.length) { %>
+          <ul class="divide-y divide-dark-600 border-y border-dark-600">
+            <% certificates.forEach(function(certificate) { %>
+              <li class="flex gap-4 py-5">
+                <% if (certificate.image) { %>
+                  <button type="button" class="certificate-image-trigger h-14 w-14 shrink-0 overflow-hidden rounded-md border border-dark-600 bg-dark-800 p-1" data-certificate-zoom data-image-src="<%= certificate.image %>" data-image-alt="<%= certificate.title %>" aria-label="View certificate image: <%= certificate.title %>">
+                    <img src="<%= certificate.image %>" alt="" class="h-full w-full object-contain">
+                  </button>
+                <% } %>
+                <div class="min-w-0 flex-1">
+                  <h3 class="font-semibold text-white"><%= certificate.title %></h3>
+                  <% if (certificate.issuer) { %><p class="mt-1 text-sm text-gray-400"><%= certificate.issuer %></p><% } %>
+                  <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500">
+                    <% if (certificate.obtained_date) { %><span><%= new Date(certificate.obtained_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) %></span><% } %>
+                    <% if (certificate.category) { %><span><%= certificate.category %></span><% } %>
+                  </div>
+                  <% if (certificate.description) { %><p class="mt-2 text-sm leading-6 text-gray-300"><%= certificate.description %></p><% } %>
+                  <% if (certificate.verification_url) { %><a class="mt-3 inline-block text-sm text-red-400 hover:text-red-300" href="<%= certificate.verification_url %>" target="_blank" rel="noopener noreferrer">Verify certificate <span aria-hidden="true">↗</span></a><% } %>
+                </div>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p class="border-y border-dark-600 py-5 text-sm text-gray-400">Certificates added to the portfolio will appear here.</p>
+        <% } %>
+      </section>
+    </div>
+  </main>
+  <dialog class="certificate-viewer" data-certificate-viewer aria-labelledby="certificate-viewer-title">
+    <div class="certificate-viewer-panel">
+      <div class="certificate-viewer-toolbar">
+        <h2 id="certificate-viewer-title" data-certificate-viewer-title>Certificate preview</h2>
+        <button type="button" class="certificate-viewer-close" data-certificate-viewer-close>Close</button>
+      </div>
+      <img data-certificate-viewer-image alt="">
+    </div>
+  </dialog>
+  <%- include('partials/footer') %>
+  <script src="/js/main.js"></script>
+</body>
+</html>
