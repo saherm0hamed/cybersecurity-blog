@@ -45,21 +45,34 @@ const imageFileFilter = (req, file, cb) => {
   else cb(new Error('Only image files are allowed'));
 };
 
+// const uploadOptions = {
+//   limits: { fileSize: 10 * 1024 * 1024 },
+//   fileFilter: imageFileFilter
+// };
+// const upload = multer({ storage, ...uploadOptions });
+// const postUpload = multer({ storage: multer.memoryStorage(), ...uploadOptions });
+
+// Multer — always memory storage (Vercel is read-only; we upload to Cloudinary)
 const uploadOptions = {
   limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: imageFileFilter
+  fileFilter: (req, file, cb) => {
+    const allowed = {
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.gif': 'image/gif',
+      '.webp': 'image/webp'
+    };
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed[ext] === file.mimetype) cb(null, true);
+    else cb(new Error('Only image files are allowed'));
+  }
 };
-const upload = multer({ storage, ...uploadOptions });
-const postUpload = multer({ storage: multer.memoryStorage(), ...uploadOptions });
 
-// async function savePostCover(postId, file) {
-//   const directory = postUploadDirectory(postId);
-//   await fs.promises.mkdir(directory, { recursive: true });
-//   const extension = path.extname(file.originalname).toLowerCase();
-//   const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
-//   await fs.promises.writeFile(path.join(directory, filename), file.buffer, { flag: 'wx' });
-//   return `/uploads/posts/${postId}/${filename}`;
-// }
+// One uploader for everything
+const upload = multer({ storage: multer.memoryStorage(), ...uploadOptions });
+const postUpload = upload; // same thing, keep the name if your routes use it
+
 
 // ========== AUTH ==========
 router.get('/login', redirectIfAuth, (req, res) => {
@@ -347,7 +360,7 @@ router.post('/posts', requireAuth, postUpload.single('cover_image'), async (req,
     });
     createdPostId = Number(result.lastInsertRowid);
 
-    await fs.promises.mkdir(postUploadDirectory(createdPostId), { recursive: true });
+    // await fs.promises.mkdir(postUploadDirectory(createdPostId), { recursive: true });
     if (req.file) {
       const { url } = await uploadToCloudinary(req.file.buffer, `blog/posts/${createdPostId}`);
       await db.execute({ sql: 'UPDATE posts SET cover_image = ? WHERE id = ?', args: [url, createdPostId] });
@@ -458,10 +471,28 @@ router.get('/certificates/new', requireAuth, (req, res) => {
   res.render('admin/certificates/form', { title: 'New Certificate', cert: null });
 });
 
+// router.post('/certificates', requireAuth, upload.single('image'), async (req, res, next) => {
+//   try {
+//     const { title, issuer, obtained_date, description, verification_url, category } = req.body;
+//     // const image = req.file ? '/uploads/' + req.file.filename : null;
+//     let image = null;
+//     if (req.file) {
+//       const { url } = await uploadToCloudinary(req.file.buffer, 'blog/certificates');
+//       image = url;
+//     }
+//     await db.execute({
+//       sql: `INSERT INTO certificates (title, issuer, obtained_date, image, description, verification_url, category)
+//             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+//       args: [title, issuer, obtained_date, image, description, verification_url, category]
+//     });
+//     req.flash('success', 'Certificate added');
+//     res.redirect('/admin/certificates');
+//   } catch (err) { next(err); }
+// });
+
 router.post('/certificates', requireAuth, upload.single('image'), async (req, res, next) => {
   try {
     const { title, issuer, obtained_date, description, verification_url, category } = req.body;
-    // const image = req.file ? '/uploads/' + req.file.filename : null;
     let image = null;
     if (req.file) {
       const { url } = await uploadToCloudinary(req.file.buffer, 'blog/certificates');
@@ -477,20 +508,10 @@ router.post('/certificates', requireAuth, upload.single('image'), async (req, re
   } catch (err) { next(err); }
 });
 
-router.get('/certificates/:id/edit', requireAuth, async (req, res, next) => {
-  try {
-    const result = await db.execute({ sql: 'SELECT * FROM certificates WHERE id = ?', args: [req.params.id] });
-    const cert = result.rows[0];
-    if (!cert) return res.redirect('/admin/certificates');
-    res.render('admin/certificates/form', { title: 'Edit Certificate', cert });
-  } catch (err) { next(err); }
-});
-
 router.post('/certificates/:id', requireAuth, upload.single('image'), async (req, res, next) => {
   try {
     const { title, issuer, obtained_date, description, verification_url, category, existing_image } = req.body;
-    // const image = req.file ? '/uploads/' + req.file.filename : existing_image;
-    let image = existing_image;
+    let image = existing_image || null;
     if (req.file) {
       if (existing_image) await deleteFromCloudinary(existing_image);
       const { url } = await uploadToCloudinary(req.file.buffer, 'blog/certificates');
@@ -504,6 +525,34 @@ router.post('/certificates/:id', requireAuth, upload.single('image'), async (req
     res.redirect('/admin/certificates');
   } catch (err) { next(err); }
 });
+
+router.get('/certificates/:id/edit', requireAuth, async (req, res, next) => {
+  try {
+    const result = await db.execute({ sql: 'SELECT * FROM certificates WHERE id = ?', args: [req.params.id] });
+    const cert = result.rows[0];
+    if (!cert) return res.redirect('/admin/certificates');
+    res.render('admin/certificates/form', { title: 'Edit Certificate', cert });
+  } catch (err) { next(err); }
+});
+
+// router.post('/certificates/:id', requireAuth, upload.single('image'), async (req, res, next) => {
+//   try {
+//     const { title, issuer, obtained_date, description, verification_url, category, existing_image } = req.body;
+//     // const image = req.file ? '/uploads/' + req.file.filename : existing_image;
+//     let image = existing_image;
+//     if (req.file) {
+//       if (existing_image) await deleteFromCloudinary(existing_image);
+//       const { url } = await uploadToCloudinary(req.file.buffer, 'blog/certificates');
+//       image = url;
+//     }
+//     await db.execute({
+//       sql: `UPDATE certificates SET title=?, issuer=?, obtained_date=?, image=?, description=?, verification_url=?, category=? WHERE id=?`,
+//       args: [title, issuer, obtained_date, image, description, verification_url, category, req.params.id]
+//     });
+//     req.flash('success', 'Certificate updated');
+//     res.redirect('/admin/certificates');
+//   } catch (err) { next(err); }
+// });
 
 router.post('/certificates/:id/delete', requireAuth, async (req, res, next) => {
   try {
