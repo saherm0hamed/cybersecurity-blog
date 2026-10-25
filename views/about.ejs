@@ -8,114 +8,646 @@
   <script>tailwind.config = { darkMode: 'class', theme: { extend: { colors: { dark: { 900: '#0a0a0a', 800: '#111', 700: '#1a1a1a', 600: '#222' } }, fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } } }</script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/custom.css">
+  <style>
+    /* ── About page component styles ── */
+
+    /* Hero stat chips */
+    .about-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      padding: 0.875rem 1.25rem;
+      border-radius: var(--radius-md);
+      background: var(--bg-700);
+      border: 1px solid var(--border-subtle);
+    }
+    html:not(.dark) .about-stat {
+      background: #ffffff;
+      border-color: #e2e8f0;
+    }
+    .about-stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    html:not(.dark) .about-stat-value { color: #172033; }
+    .about-stat-label {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+    html:not(.dark) .about-stat-label { color: #64748b; }
+
+    /* Section eyebrow label */
+    .section-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .section-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 1.5rem;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* Timeline / experience entries */
+    .exp-entry {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+    @media (min-width: 640px) {
+      .exp-entry { grid-template-columns: 11rem 1fr; gap: 2rem; }
+    }
+
+    .exp-date {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding-top: 0.2rem;
+      white-space: nowrap;
+    }
+    html:not(.dark) .exp-date { color: #64748b; }
+
+    .exp-role {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.35;
+    }
+    html:not(.dark) .exp-role { color: #172033; }
+
+    .exp-company {
+      margin-top: 0.2rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+    html:not(.dark) .exp-company { color: #64748b; }
+
+    .exp-bullets {
+      margin-top: 0.85rem;
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .exp-bullets li {
+      display: flex;
+      gap: 0.65rem;
+      font-size: 0.8125rem;
+      line-height: 1.65;
+      color: var(--text-secondary);
+    }
+    html:not(.dark) .exp-bullets li { color: #475569; }
+    .exp-bullets li::before {
+      content: '▸';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+      font-size: 0.65rem;
+      line-height: 1.8;
+    }
+
+    /* Timeline connector line */
+    .exp-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .exp-timeline-item {
+      position: relative;
+      padding-bottom: 2.5rem;
+    }
+    .exp-timeline-item:last-child { padding-bottom: 0; }
+    .exp-timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem;
+      top: 0.45rem;
+      bottom: -0.45rem;
+      width: 1px;
+      background: linear-gradient(180deg, var(--accent) 0%, var(--border-subtle) 100%);
+    }
+    .exp-timeline-item:last-child::before { display: none; }
+    .exp-timeline-item::after {
+      content: '';
+      position: absolute;
+      left: -1.75rem;
+      top: 0.35rem;
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg-900);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+    html:not(.dark) .exp-timeline-item::after {
+      border-color: #f8fafc;
+    }
+
+    /* Skill tags */
+    .skill-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.3rem 0.7rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: var(--bg-700);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      transition: border-color var(--transition-fast), color var(--transition-fast);
+    }
+    .skill-tag:hover {
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+    html:not(.dark) .skill-tag {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      color: #475569;
+    }
+    html:not(.dark) .skill-tag:hover {
+      border-color: var(--accent);
+      color: #172033;
+    }
+
+    /* Project card */
+    .project-card {
+      padding: 1.1rem 1.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-700);
+      transition: border-color var(--transition-std), box-shadow var(--transition-std);
+    }
+    .project-card:hover {
+      border-color: var(--border);
+      box-shadow: var(--shadow-card);
+    }
+    html:not(.dark) .project-card {
+      background: #ffffff;
+      border-color: #e2e8f0;
+    }
+    html:not(.dark) .project-card:hover { border-color: #cbd5e1; }
+
+    .project-card-title {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    html:not(.dark) .project-card-title { color: #172033; }
+
+    .project-card-desc {
+      margin-top: 0.35rem;
+      font-size: 0.8rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+    html:not(.dark) .project-card-desc { color: #475569; }
+
+    .project-card-stack {
+      margin-top: 0.6rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    html:not(.dark) .project-card-stack { color: #64748b; }
+    .project-card-stack strong {
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    html:not(.dark) .project-card-stack strong { color: #475569; }
+
+    .project-link {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      transition: color var(--transition-fast);
+    }
+    .project-link:hover { color: var(--accent-hover); }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    .status-badge.completed {
+      background: rgba(34, 197, 94, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+    .status-badge.in-progress {
+      background: rgba(251, 191, 36, 0.1);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+    html:not(.dark) .status-badge.completed {
+      background: rgba(34, 197, 94, 0.08);
+      color: #16a34a;
+      border-color: rgba(34, 197, 94, 0.2);
+    }
+    html:not(.dark) .status-badge.in-progress {
+      background: rgba(217, 119, 6, 0.08);
+      color: #d97706;
+      border-color: rgba(217, 119, 6, 0.2);
+    }
+
+    /* Certificate card */
+    .cert-card {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem 1.1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-700);
+      transition: border-color var(--transition-std);
+    }
+    .cert-card:hover { border-color: var(--border); }
+    html:not(.dark) .cert-card {
+      background: #ffffff;
+      border-color: #e2e8f0;
+    }
+    html:not(.dark) .cert-card:hover { border-color: #cbd5e1; }
+
+    .cert-card-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.35;
+    }
+    html:not(.dark) .cert-card-title { color: #172033; }
+
+    .cert-card-issuer {
+      margin-top: 0.2rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    html:not(.dark) .cert-card-issuer { color: #64748b; }
+
+    .cert-card-meta {
+      margin-top: 0.35rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    html:not(.dark) .cert-card-meta { color: #94a3b8; }
+
+    .cert-verify-link {
+      margin-top: 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .cert-verify-link:hover { color: var(--accent-hover); }
+
+    /* Section divider */
+    .section-divider {
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 3rem 0;
+    }
+    html:not(.dark) .section-divider { background: #e2e8f0; }
+
+    /* ── Skills ticker ── */
+    .skills-ticker-wrap {
+      position: relative;
+      overflow: hidden;
+      /* fade edges */
+      -webkit-mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        black 8%,
+        black 92%,
+        transparent 100%
+      );
+      mask-image: linear-gradient(
+        to right,
+        transparent 0%,
+        black 8%,
+        black 92%,
+        transparent 100%
+      );
+    }
+
+    .skills-ticker {
+      display: flex;
+      width: max-content;
+      animation: ticker-scroll 28s linear infinite;
+    }
+
+    /* Pause on hover for accessibility */
+    .skills-ticker-wrap:hover .skills-ticker {
+      animation-play-state: paused;
+    }
+
+    .skills-ticker-track {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding-right: 0.6rem; /* matches gap so loop is gapless */
+      flex-shrink: 0;
+    }
+
+    @keyframes ticker-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .skills-ticker {
+        animation: none;
+      }
+      .skills-ticker-wrap {
+        -webkit-mask-image: none;
+        mask-image: none;
+        overflow-x: auto;
+      }
+      .skills-ticker-track:last-child {
+        display: none; /* hide duplicate when not animating */
+      }
+    }
+  </style>
 </head>
 <body class="bg-dark-900 text-gray-100 font-sans antialiased min-h-screen flex flex-col">
   <%- include('partials/header') %>
-  <main class="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
-    <section class="border-b border-dark-600 pb-10 sm:pb-12" aria-labelledby="about-title">
-      <p class="mb-3 text-sm font-semibold uppercase text-red-400">About</p>
-      <h1 id="about-title" class="max-w-4xl text-3xl font-bold leading-tight text-white sm:text-4xl">Offensive Security Engineer <span class="text-gray-400">/ Offensive Tool Developer</span></h1>
-      <div class="mt-6 max-w-3xl space-y-4 text-base leading-7 text-gray-300">
-        <p>Penetration tester with hands-on experience in web, mobile, and network security testing. Skilled in identifying vulnerabilities and developing <strong class="font-semibold text-white">Python-based hacking tools</strong>. Solid backend understanding of APIs, databases, and server-side logic, enabling insight into full-stack security flaws.</p>
-        <p>This blog is my public knowledge base, documenting techniques, CTF writeups, and research notes from real-world engagements and lab work. Everything written here comes from hands-on experience, not theory.</p>
+
+  <main class="flex-1 w-full">
+
+    <!-- ══════════════════════════════════════
+         HERO / BIO
+    ══════════════════════════════════════ -->
+    <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-10" aria-labelledby="about-title">
+
+      <span class="section-eyebrow">About</span>
+
+      <h1 id="about-title" class="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight"
+          style="color: var(--text-primary)">
+        Offensive Security Engineer
+        <span style="color: var(--text-muted); font-weight: 500"> / Offensive Tool Developer</span>
+      </h1>
+
+      <div class="mt-5 max-w-2xl space-y-3 text-sm leading-7" style="color: var(--text-secondary)">
+        <p>Penetration tester with hands-on experience in web, mobile, and network security testing. Skilled in identifying vulnerabilities and developing <strong style="font-weight: 600; color: var(--text-primary)">Python-based offensive tools</strong>. Solid backend understanding of APIs, databases, and server-side logic, enabling insight into full-stack security flaws.</p>
+        <p>This blog is my public knowledge base — documenting techniques, CTF writeups, and research notes from real-world engagements and lab work. Everything written here comes from hands-on experience, not theory.</p>
+      </div>
+
+      <!-- Stats row -->
+      <div class="mt-8 flex flex-wrap gap-3">
+        <div class="about-stat">
+          <span class="about-stat-value">4+</span>
+          <span class="about-stat-label">Years active</span>
+        </div>
+        <div class="about-stat">
+          <span class="about-stat-value" style="color: var(--accent)">HTB</span>
+          <span class="about-stat-label">CPTS certified</span>
+        </div>
+        <div class="about-stat">
+          <span class="about-stat-value">Python</span>
+          <span class="about-stat-label">Primary language</span>
+        </div>
+        <div class="about-stat">
+          <span class="about-stat-value">Cairo</span>
+          <span class="about-stat-label">Based in</span>
+        </div>
+      </div>
+
+      <!-- Skills ticker -->
+      <div class="skills-ticker-wrap mt-6">
+        <div class="skills-ticker">
+          <!-- Set A -->
+          <div class="skills-ticker-track" aria-hidden="false">
+            <span class="skill-tag">Burp Suite</span>
+            <span class="skill-tag">Nmap</span>
+            <span class="skill-tag">Metasploit</span>
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">OWASP ZAP</span>
+            <span class="skill-tag">Active Directory</span>
+            <span class="skill-tag">Web App Testing</span>
+            <span class="skill-tag">Network PenTest</span>
+            <span class="skill-tag">CTFs</span>
+            <span class="skill-tag">Linux</span>
+            <span class="skill-tag">Wireshark</span>
+            <span class="skill-tag">SQLmap</span>
+            <span class="skill-tag">John the Ripper</span>
+            <span class="skill-tag">Hashcat</span>
+            <span class="skill-tag">ffuf</span>
+          </div>
+          <!-- Set B — exact duplicate for seamless loop -->
+          <div class="skills-ticker-track" aria-hidden="true">
+            <span class="skill-tag">Burp Suite</span>
+            <span class="skill-tag">Nmap</span>
+            <span class="skill-tag">Metasploit</span>
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">OWASP ZAP</span>
+            <span class="skill-tag">Active Directory</span>
+            <span class="skill-tag">Web App Testing</span>
+            <span class="skill-tag">Network PenTest</span>
+            <span class="skill-tag">CTFs</span>
+            <span class="skill-tag">Linux</span>
+            <span class="skill-tag">Wireshark</span>
+            <span class="skill-tag">SQLmap</span>
+            <span class="skill-tag">John the Ripper</span>
+            <span class="skill-tag">Hashcat</span>
+            <span class="skill-tag">ffuf</span>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="border-b border-dark-600 py-10 sm:py-12" aria-labelledby="experience-title">
-      <div class="mb-7">
-        <p class="mb-2 text-xs font-semibold uppercase text-red-400">Career</p>
-        <h2 id="experience-title" class="text-2xl font-bold text-white">Work experience</h2>
-      </div>
-      <div class="space-y-8">
-        <article class="grid gap-2 sm:grid-cols-[190px_minmax(0,1fr)] sm:gap-8">
-          <p class="text-sm font-medium text-gray-400">Dec 2025 — Mar 2026</p>
-          <div>
-            <h3 class="text-lg font-semibold text-white">Offensive Security Engineer Internship</h3>
-            <p class="mt-1 text-sm text-gray-400">Cyber Force LLC <span aria-hidden="true">·</span> Sheraton, Egypt</p>
-            <ul class="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-gray-300 marker:text-red-400">
-              <li>Collaborated with senior penetration testers on real-world client engagements and security assessments.</li>
-              <li>Performed internal and external network vulnerability scans and penetration testing.</li>
-              <li>Conducted security tests on websites and mobile applications for large Egyptian financial companies.</li>
-            </ul>
-          </div>
-        </article>
+    <div class="section-divider max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" style="margin-left: auto; margin-right: auto; max-width: 64rem; padding-left: 1rem; padding-right: 1rem;"></div>
 
-        <article class="grid gap-2 sm:grid-cols-[190px_minmax(0,1fr)] sm:gap-8">
-          <p class="text-sm font-medium text-gray-400">Feb 2025 — May 2025</p>
-          <div>
-            <h3 class="text-lg font-semibold text-white">Penetration Testing &amp; Ethical Hacking Internship</h3>
-            <p class="mt-1 text-sm text-gray-400">National Telecommunication Institute (NTI) <span aria-hidden="true">·</span> Smart Village, Egypt</p>
-            <ul class="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-gray-300 marker:text-red-400">
-              <li>Conducted web application security assessments with Burp Suite, OWASP ZAP, and manual testing techniques.</li>
-              <li>Performed network vulnerability scans and penetration testing using Nmap, Metasploit, and custom Python scripts.</li>
-              <li>Gained hands-on experience with ethical hacking methodologies and industry-standard penetration testing frameworks.</li>
-            </ul>
+    <!-- ══════════════════════════════════════
+         EXPERIENCE
+    ══════════════════════════════════════ -->
+    <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-10" aria-labelledby="experience-title">
+      <span class="section-eyebrow">Career</span>
+      <h2 id="experience-title" class="text-2xl font-extrabold tracking-tight mb-8"
+          style="color: var(--text-primary)">Work Experience</h2>
+
+      <div class="pl-8 exp-timeline">
+
+        <!-- Entry 1 -->
+        <div class="exp-timeline-item">
+          <div class="exp-entry">
+            <p class="exp-date">Dec 2025 — Mar 2026</p>
+            <div>
+              <h3 class="exp-role">Offensive Security Engineer Internship</h3>
+              <p class="exp-company">Cyber Force LLC · Sheraton, Egypt</p>
+              <ul class="exp-bullets">
+                <li>Collaborated with senior penetration testers on real-world client engagements and security assessments.</li>
+                <li>Performed internal and external network vulnerability scans and penetration testing.</li>
+                <li>Conducted security tests on websites and mobile applications for large Egyptian financial companies.</li>
+              </ul>
+            </div>
           </div>
-        </article>
+        </div>
+
+        <!-- Entry 2 -->
+        <div class="exp-timeline-item">
+          <div class="exp-entry">
+            <p class="exp-date">Feb 2025 — May 2025</p>
+            <div>
+              <h3 class="exp-role">Penetration Testing &amp; Ethical Hacking Internship</h3>
+              <p class="exp-company">National Telecommunication Institute (NTI) · Smart Village, Egypt</p>
+              <ul class="exp-bullets">
+                <li>Conducted web application security assessments with Burp Suite, OWASP ZAP, and manual testing techniques.</li>
+                <li>Performed network vulnerability scans and penetration testing using Nmap, Metasploit, and custom Python scripts.</li>
+                <li>Gained hands-on experience with ethical hacking methodologies and industry-standard penetration testing frameworks.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
 
-    <div class="grid gap-10 py-10 sm:py-12 lg:grid-cols-2 lg:gap-14">
-      <section aria-labelledby="projects-title">
-        <div class="mb-5">
-          <p class="mb-2 text-xs font-semibold uppercase text-red-400">Selected work</p>
-          <h2 id="projects-title" class="text-2xl font-bold text-white">Projects</h2>
-        </div>
-        <% if (projects.length) { %>
-          <ul class="divide-y divide-dark-600 border-y border-dark-600">
-            <% projects.forEach(function(project) { %>
-              <li class="py-5">
-                <div class="flex flex-wrap items-start justify-between gap-3">
-                  <h3 class="text-lg font-semibold text-white"><%= project.title %></h3>
-                  <span class="text-xs text-gray-500"><%= project.status === 'in-progress' ? 'In progress' : 'Completed' %></span>
-                </div>
-                <% if (project.short_description) { %><p class="mt-2 text-sm leading-6 text-gray-300"><%= project.short_description %></p><% } %>
-                <% if (project.tech_stack) { %><p class="mt-3 text-xs text-gray-400"><span class="font-semibold text-gray-300">Tools:</span> <%= project.tech_stack %></p><% } %>
-                <div class="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-                  <% if (project.github_url) { %><a class="text-red-400 hover:text-red-300" href="<%= project.github_url %>" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><% } %>
-                  <% if (project.demo_url) { %><a class="text-red-400 hover:text-red-300" href="<%= project.demo_url %>" target="_blank" rel="noopener noreferrer">Live demo <span aria-hidden="true">↗</span></a><% } %>
-                </div>
-              </li>
-            <% }) %>
-          </ul>
-        <% } else { %>
-          <p class="border-y border-dark-600 py-5 text-sm text-gray-400">Projects added to the portfolio will appear here.</p>
-        <% } %>
-      </section>
+    <div style="height:1px; background: var(--border-subtle); max-width:64rem; margin: 0 auto 2.5rem; padding: 0 1rem;"><div style="height:1px; background: var(--border-subtle);"></div></div>
 
-      <section aria-labelledby="certificates-title">
-        <div class="mb-5">
-          <p class="mb-2 text-xs font-semibold uppercase text-red-400">Credentials</p>
-          <h2 id="certificates-title" class="text-2xl font-bold text-white">Certificates</h2>
-        </div>
-        <% if (certificates.length) { %>
-          <ul class="divide-y divide-dark-600 border-y border-dark-600">
-            <% certificates.forEach(function(certificate) { %>
-              <li class="flex gap-4 py-5">
-                <% if (certificate.image) { %>
-                  <button type="button" class="certificate-image-trigger h-14 w-14 shrink-0 overflow-hidden rounded-md border border-dark-600 bg-dark-800 p-1" data-certificate-zoom data-image-src="<%= certificate.image %>" data-image-alt="<%= certificate.title %>" aria-label="View certificate image: <%= certificate.title %>">
-                    <img src="<%= certificate.image %>" alt="" class="h-full w-full object-contain">
-                  </button>
-                <% } %>
-                <div class="min-w-0 flex-1">
-                  <h3 class="font-semibold text-white"><%= certificate.title %></h3>
-                  <% if (certificate.issuer) { %><p class="mt-1 text-sm text-gray-400"><%= certificate.issuer %></p><% } %>
-                  <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500">
-                    <% if (certificate.obtained_date) { %><span><%= new Date(certificate.obtained_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) %></span><% } %>
-                    <% if (certificate.category) { %><span><%= certificate.category %></span><% } %>
+    <!-- ══════════════════════════════════════
+         PROJECTS + CERTIFICATES (2-col)
+    ══════════════════════════════════════ -->
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <div class="grid gap-12 lg:grid-cols-2 lg:gap-14">
+
+        <!-- ── Projects ── -->
+        <section aria-labelledby="projects-title">
+          <span class="section-eyebrow">Selected work</span>
+          <h2 id="projects-title" class="text-2xl font-extrabold tracking-tight mb-6"
+              style="color: var(--text-primary)">Projects</h2>
+
+          <% if (projects.length) { %>
+            <div class="flex flex-col gap-3">
+              <% projects.forEach(function(project) { %>
+                <div class="project-card">
+                  <div class="flex items-start justify-between gap-3">
+                    <h3 class="project-card-title"><%= project.title %></h3>
+                    <span class="status-badge <%= project.status === 'in-progress' ? 'in-progress' : 'completed' %> shrink-0">
+                      <span style="width:0.4rem;height:0.4rem;border-radius:50%;background:currentColor;display:inline-block;"></span>
+                      <%= project.status === 'in-progress' ? 'In progress' : 'Completed' %>
+                    </span>
                   </div>
-                  <% if (certificate.description) { %><p class="mt-2 text-sm leading-6 text-gray-300"><%= certificate.description %></p><% } %>
-                  <% if (certificate.verification_url) { %><a class="mt-3 inline-block text-sm text-red-400 hover:text-red-300" href="<%= certificate.verification_url %>" target="_blank" rel="noopener noreferrer">Verify certificate <span aria-hidden="true">↗</span></a><% } %>
+                  <% if (project.short_description) { %>
+                    <p class="project-card-desc"><%= project.short_description %></p>
+                  <% } %>
+                  <% if (project.tech_stack) { %>
+                    <p class="project-card-stack">
+                      <strong>Stack:</strong> <%= project.tech_stack %>
+                    </p>
+                  <% } %>
+                  <% if (project.github_url || project.demo_url) { %>
+                    <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                      <% if (project.github_url) { %>
+                        <a class="project-link" href="<%= project.github_url %>" target="_blank" rel="noopener noreferrer">
+                          <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"/></svg>
+                          GitHub
+                        </a>
+                      <% } %>
+                      <% if (project.demo_url) { %>
+                        <a class="project-link" href="<%= project.demo_url %>" target="_blank" rel="noopener noreferrer">
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6m0 0v6m0-6L10 14"/></svg>
+                          Live demo
+                        </a>
+                      <% } %>
+                    </div>
+                  <% } %>
                 </div>
-              </li>
-            <% }) %>
-          </ul>
-        <% } else { %>
-          <p class="border-y border-dark-600 py-5 text-sm text-gray-400">Certificates added to the portfolio will appear here.</p>
-        <% } %>
-      </section>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <p class="text-sm py-6 border-y" style="color: var(--text-muted); border-color: var(--border-subtle);">
+              Projects added to the portfolio will appear here.
+            </p>
+          <% } %>
+        </section>
+
+        <!-- ── Certificates ── -->
+        <section aria-labelledby="certificates-title">
+          <span class="section-eyebrow">Credentials</span>
+          <h2 id="certificates-title" class="text-2xl font-extrabold tracking-tight mb-6"
+              style="color: var(--text-primary)">Certificates</h2>
+
+          <% if (certificates.length) { %>
+            <div class="flex flex-col gap-3">
+              <% certificates.forEach(function(certificate) { %>
+                <div class="cert-card">
+                  <% if (certificate.image) { %>
+                    <button type="button"
+                      class="certificate-image-trigger h-14 w-14 shrink-0 overflow-hidden rounded-md p-0.5"
+                      style="border: 1px solid var(--border); background: var(--bg-800);"
+                      data-certificate-zoom
+                      data-image-src="<%= certificate.image %>"
+                      data-image-alt="<%= certificate.title %>"
+                      aria-label="View certificate: <%= certificate.title %>">
+                      <img src="<%= certificate.image %>" alt="" class="h-full w-full object-contain">
+                    </button>
+                  <% } %>
+                  <div class="min-w-0 flex-1">
+                    <p class="cert-card-title"><%= certificate.title %></p>
+                    <% if (certificate.issuer) { %>
+                      <p class="cert-card-issuer"><%= certificate.issuer %></p>
+                    <% } %>
+                    <div class="cert-card-meta">
+                      <% if (certificate.obtained_date) { %>
+                        <span><%= new Date(certificate.obtained_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) %></span>
+                      <% } %>
+                      <% if (certificate.category) { %>
+                        <span style="padding: 0 0.35rem; border-left: 1px solid var(--border-subtle);"><%= certificate.category %></span>
+                      <% } %>
+                    </div>
+                    <% if (certificate.description) { %>
+                      <p class="mt-1 text-xs leading-relaxed" style="color: var(--text-secondary)"><%= certificate.description %></p>
+                    <% } %>
+                    <% if (certificate.verification_url) { %>
+                      <a class="cert-verify-link" href="<%= certificate.verification_url %>" target="_blank" rel="noopener noreferrer">
+                        Verify
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6m0 0v6m0-6L10 14"/></svg>
+                      </a>
+                    <% } %>
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <p class="text-sm py-6 border-y" style="color: var(--text-muted); border-color: var(--border-subtle);">
+              Certificates added to the portfolio will appear here.
+            </p>
+          <% } %>
+        </section>
+
+      </div>
     </div>
+
   </main>
+
+  <!-- Certificate zoom dialog (unchanged from original) -->
   <dialog class="certificate-viewer" data-certificate-viewer aria-labelledby="certificate-viewer-title">
     <div class="certificate-viewer-panel">
       <div class="certificate-viewer-toolbar">
@@ -125,6 +657,7 @@
       <img data-certificate-viewer-image alt="">
     </div>
   </dialog>
+
   <%- include('partials/footer') %>
   <script src="/js/main.js"></script>
 </body>
