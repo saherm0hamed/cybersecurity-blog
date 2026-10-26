@@ -3,53 +3,221 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Posts | Admin</title>
+  <title>Posts · Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/custom.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #080a0c; color: #f3f4f6; min-height: 100dvh; display: flex; flex-direction: column; }
+    main { flex: 1; max-width: 72rem; margin: 0 auto; width: 100%; padding: 2.5rem 1.25rem 4rem; }
+
+    .alert { display: flex; align-items: flex-start; gap: .65rem; padding: .75rem .9rem; border-radius: .5rem; font-size: .8rem; line-height: 1.5; margin-bottom: 1.5rem; }
+    .alert svg { flex-shrink: 0; margin-top: .1rem; }
+    .alert-error   { border: 1px solid rgba(217,0,0,.3);    background: rgba(217,0,0,.07);    color: #fca5a5; }
+    .alert-success { border: 1px solid rgba(34,197,94,.25); background: rgba(34,197,94,.07);  color: #86efac; }
+
+    .page-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
+    .page-title  { font-size: 1.375rem; font-weight: 800; letter-spacing: -.03em; color: #f3f4f6; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .5rem .9rem; border-radius: .5rem;
+      background: #D90000; color: #fff; border: none;
+      font-size: .8rem; font-weight: 700; text-decoration: none; cursor: pointer;
+      transition: background-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+    }
+    .btn-primary:hover { background: #f01010; box-shadow: 0 4px 14px rgba(217,0,0,.25); transform: translateY(-1px); }
+
+    /* Filter bar */
+    .filter-bar { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; align-items: center; }
+    .filter-input {
+      padding: .45rem .8rem .45rem 2.1rem; background: #111315;
+      border: 1px solid #2d3138; border-radius: .5rem;
+      font-size: .8rem; color: #f3f4f6; outline: none;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+      width: 14rem;
+    }
+    .filter-input::placeholder { color: #4b5563; }
+    .filter-input:focus { border-color: #D90000; box-shadow: 0 0 0 3px rgba(217,0,0,.1); }
+    .filter-wrap { position: relative; }
+    .filter-icon { position: absolute; left: .65rem; top: 50%; transform: translateY(-50%); color: #6b7280; pointer-events: none; }
+
+    .filter-select {
+      padding: .45rem .75rem; background: #111315;
+      border: 1px solid #2d3138; border-radius: .5rem;
+      font-size: .8rem; color: #d1d5db; outline: none;
+      transition: border-color 140ms ease;
+      cursor: pointer;
+    }
+    .filter-select:focus { border-color: #D90000; }
+    .filter-select option { background: #111315; color: #f3f4f6; }
+
+    .posts-count { margin-left: auto; font-size: .73rem; color: #6b7280; }
+
+    /* Table card */
+    .table-card { background: #0d0f11; border: 1px solid #2d3138; border-radius: .875rem; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: .8125rem; }
+    thead tr { background: #080a0c; }
+    thead th {
+      padding: .65rem 1.1rem; text-align: left;
+      font-size: .65rem; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; color: #6b7280; white-space: nowrap;
+    }
+    tbody tr { border-top: 1px solid #1a1d20; transition: background-color 120ms ease; }
+    tbody tr:hover { background: #111315; }
+    tbody td { padding: .8rem 1.1rem; color: #9ca3af; vertical-align: middle; }
+
+    .cell-id    { color: #4b5563; font-size: .73rem; font-variant-numeric: tabular-nums; width: 3rem; }
+    .cell-title { color: #e5e7eb; font-weight: 600; max-width: 24rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cell-title a { color: inherit; text-decoration: none; }
+    .cell-title a:hover { color: #D90000; }
+
+    .status-pill { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .6rem; border-radius: 9999px; font-size: .68rem; font-weight: 600; }
+    .status-pill::before { content: ''; width: .4rem; height: .4rem; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .status-pill.published { color: #4ade80; background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.2); }
+    .status-pill.draft     { color: #facc15; background: rgba(250,204,21,.08); border: 1px solid rgba(250,204,21,.15); }
+
+    .row-actions { display: flex; align-items: center; gap: .2rem; }
+    .row-action {
+      display: inline-flex; align-items: center; gap: .3rem;
+      padding: .28rem .55rem; border-radius: .375rem; font-size: .72rem; font-weight: 600;
+      text-decoration: none; border: 1px solid transparent;
+      background: transparent; cursor: pointer; color: #6b7280;
+      transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+    }
+    .row-action:hover { background: #1a1d20; border-color: #2d3138; color: #d1d5db; }
+    .row-action.edit:hover   { color: #D90000; border-color: rgba(217,0,0,.2); background: rgba(217,0,0,.06); }
+    .row-action.delete:hover { color: #f87171; border-color: rgba(248,113,113,.2); background: rgba(248,113,113,.06); }
+
+    .empty-state { padding: 3.5rem 1.25rem; text-align: center; color: #374151; font-size: .8125rem; }
+    .empty-state a { color: #D90000; text-decoration: none; }
+  </style>
 </head>
-<body class="bg-[#0a0a0a] text-gray-100 min-h-screen">
+<body>
   <%- include('../../partials/admin-header') %>
-  <main class="max-w-7xl mx-auto px-4 py-8">
-    <% if (typeof success !== 'undefined' && success.length) { %><div role="status" class="mb-4 p-3 bg-green-900/40 border border-green-700 text-green-300 rounded-lg text-sm"><%= success.join(' ') %></div><% } %>
-    <% if (typeof error !== 'undefined' && error.length) { %><div role="alert" class="mb-4 p-3 bg-red-900/40 border border-red-700 text-red-300 rounded-lg text-sm"><%= error.join(' ') %></div><% } %>
-    <div class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold">Posts</h1>
-      <a href="/admin/posts/new" class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-medium rounded-lg"><span class="material-icons text-base" aria-hidden="true">post_add</span>New Post</a>
+  <main>
+
+    <% if (typeof success !== 'undefined' && success.length) { %>
+      <div class="alert alert-success" role="status">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <%= success.join(' ') %>
+      </div>
+    <% } %>
+    <% if (typeof error !== 'undefined' && error.length) { %>
+      <div class="alert alert-error" role="alert">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16.01"/></svg>
+        <%= error.join(' ') %>
+      </div>
+    <% } %>
+
+    <div class="page-header">
+      <h1 class="page-title">Posts</h1>
+      <a href="/admin/posts/new" class="btn-primary">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+        New post
+      </a>
     </div>
-    <div class="bg-[#1a1a1a] border border-[#222] rounded-xl overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead class="bg-[#111] text-gray-400 text-left">
-          <tr>
-            <th class="px-4 py-3">ID</th>
-            <th class="px-4 py-3">Title</th>
-            <th class="px-4 py-3">Category</th>
-            <th class="px-4 py-3">Status</th>
-            <th class="px-4 py-3">Author</th>
-            <th class="px-4 py-3">Updated</th>
-            <th class="px-4 py-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% posts.forEach(function(p) { %>
-            <tr class="border-t border-[#222]">
-              <td class="px-4 py-3 font-medium"><%= p.id %></td>
-              <td class="px-4 py-3 font-medium"><%= p.title %></td>
-              <td class="px-4 py-3 text-gray-400"><%= p.category_name || '—' %></td>
-              <td class="px-4 py-3"><span class="<%= p.status === 'published' ? 'text-green-400' : 'text-yellow-400' %>"><%= p.status %></span></td>
-              <td class="px-4 py-3 text-gray-400"><%= p.author %></td>
-              <td class="px-4 py-3 text-gray-500"><%= new Date(p.updated_at).toLocaleDateString() %></td>
-              <td class="px-4 py-3 space-x-2">
-                <a href="/admin/posts/<%= p.id %>/edit" class="inline-flex items-center gap-1 text-red-500 hover:underline"><span class="material-icons text-base" aria-hidden="true">edit</span>Edit</a>
-                <form method="POST" action="/admin/posts/<%= p.id %>/delete" class="inline" data-confirm="Delete this post? This will permanently remove it from the site.">
-                  <button type="submit" class="inline-flex items-center gap-1 text-gray-500 hover:text-red-400"><span class="material-icons text-base" aria-hidden="true">delete</span>Delete</button>
-                </form>
-              </td>
+
+    <!-- Filter / search bar -->
+    <div class="filter-bar">
+      <div class="filter-wrap">
+        <svg class="filter-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="post-search" class="filter-input" placeholder="Filter posts…" autocomplete="off" spellcheck="false">
+      </div>
+      <select id="status-filter" class="filter-select" aria-label="Filter by status">
+        <option value="">All statuses</option>
+        <option value="published">Published</option>
+        <option value="draft">Draft</option>
+      </select>
+      <span class="posts-count" id="posts-count" aria-live="polite"></span>
+    </div>
+
+    <div class="table-card">
+      <% if (posts && posts.length) { %>
+        <table id="posts-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Author</th>
+              <th>Updated</th>
+              <th>Actions</th>
             </tr>
-          <% }) %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody id="posts-tbody">
+            <% posts.forEach(function(p) { %>
+              <tr data-title="<%= p.title.toLowerCase() %>" data-status="<%= p.status %>">
+                <td class="cell-id">#<%= p.id %></td>
+                <td class="cell-title" title="<%= p.title %>">
+                  <a href="/admin/posts/<%= p.id %>/edit"><%= p.title %></a>
+                </td>
+                <td><%= p.category_name || '—' %></td>
+                <td>
+                  <span class="status-pill <%= p.status === 'published' ? 'published' : 'draft' %>"><%= p.status %></span>
+                </td>
+                <td><%= p.author %></td>
+                <td><%= new Date(p.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %></td>
+                <td>
+                  <div class="row-actions">
+                    <a href="/admin/posts/<%= p.id %>/edit" class="row-action edit">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                      Edit
+                    </a>
+                    <form method="POST" action="/admin/posts/<%= p.id %>/delete" class="inline" data-confirm="Delete this post? This will permanently remove it from the site.">
+                      <button type="submit" class="row-action delete">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path stroke-linecap="round" stroke-linejoin="round" d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2"/></svg>
+                        Delete
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <div class="empty-state">
+          No posts yet. <a href="/admin/posts/new">Create your first one →</a>
+        </div>
+      <% } %>
     </div>
+
   </main>
+
+  <script>
+    // Live filter
+    const searchInput  = document.getElementById('post-search');
+    const statusFilter = document.getElementById('status-filter');
+    const tbody        = document.getElementById('posts-tbody');
+    const countEl      = document.getElementById('posts-count');
+    const allRows      = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+
+    function updateCount(visible) {
+      if (countEl) countEl.textContent = visible + ' of ' + allRows.length + ' posts';
+    }
+
+    function filterRows() {
+      const q      = (searchInput.value || '').toLowerCase().trim();
+      const status = statusFilter.value;
+      let visible  = 0;
+      allRows.forEach(row => {
+        const titleMatch  = !q      || row.dataset.title.includes(q);
+        const statusMatch = !status || row.dataset.status === status;
+        const show = titleMatch && statusMatch;
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      updateCount(visible);
+    }
+
+    if (searchInput)  searchInput.addEventListener('input',  filterRows);
+    if (statusFilter) statusFilter.addEventListener('change', filterRows);
+    updateCount(allRows.length);
+  </script>
+
+  <script src="/js/main.js"></script>
 </body>
 </html>

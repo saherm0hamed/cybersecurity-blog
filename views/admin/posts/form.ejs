@@ -3,69 +3,274 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %> | Admin</title>
+  <title><%= title %> · Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/custom.css">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #080a0c; color: #f3f4f6; min-height: 100dvh; display: flex; flex-direction: column; }
+    main { flex: 1; max-width: 56rem; margin: 0 auto; width: 100%; padding: 2.5rem 1.25rem 4rem; }
+
+    /* Breadcrumb */
+    .breadcrumb { display: flex; align-items: center; gap: .4rem; font-size: .75rem; color: #6b7280; margin-bottom: 1.25rem; text-decoration: none; width: fit-content; }
+    .breadcrumb:hover { color: #9ca3af; }
+
+    .page-title { font-size: 1.375rem; font-weight: 800; letter-spacing: -.03em; color: #f3f4f6; margin-bottom: 1.75rem; }
+
+    /* Form sections */
+    .form-section {
+      background: #0d0f11;
+      border: 1px solid #2d3138;
+      border-radius: .875rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .form-section-label {
+      font-size: .65rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: #6b7280;
+      margin-bottom: 1.1rem; padding-bottom: .65rem;
+      border-bottom: 1px solid #1e2126;
+    }
+
+    /* Fields */
+    .field { display: flex; flex-direction: column; gap: .4rem; }
+    .field + .field { margin-top: 1rem; }
+    .field label { font-size: .8rem; font-weight: 600; color: #d1d5db; }
+    .field label .req { color: #D90000; margin-left: .15rem; }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: .6rem .8rem;
+      background: #111315;
+      border: 1px solid #2d3138;
+      border-radius: .5rem;
+      font-size: .875rem;
+      color: #f3f4f6;
+      outline: none;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+      -webkit-appearance: none;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder { color: #4b5563; }
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: #D90000;
+      box-shadow: 0 0 0 3px rgba(217,0,0,.1);
+    }
+    .field textarea { resize: vertical; line-height: 1.6; }
+    .field textarea.mono { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace; font-size: .8125rem; }
+    .field select option { background: #111315; color: #f3f4f6; }
+
+    .field-hint { font-size: .72rem; color: #6b7280; margin-top: .3rem; }
+    .field-hint a { color: #D90000; text-decoration: none; }
+    .field-hint code { font-size: .68rem; background: #1a1d20; padding: .1em .35em; border-radius: .2rem; color: #9ca3af; }
+
+    /* Two-col grid */
+    .field-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 560px) { .field-grid { grid-template-columns: 1fr 1fr; } }
+
+    /* File input */
+    .file-input-wrap { position: relative; }
+    .file-input-label {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .6rem .8rem;
+      background: #111315; border: 1px dashed #2d3138; border-radius: .5rem;
+      font-size: .8rem; color: #9ca3af; cursor: pointer;
+      transition: border-color 140ms ease, color 140ms ease;
+    }
+    .file-input-label:hover { border-color: #D90000; color: #d1d5db; }
+    .file-input-wrap input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+      padding: 0; border: none; box-shadow: none;
+    }
+    .file-input-wrap input[type="file"]:focus + .file-input-label {
+      border-color: #D90000; box-shadow: 0 0 0 3px rgba(217,0,0,.1);
+    }
+    .current-cover {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .5rem .75rem; border-radius: .4rem;
+      background: #1a1d20; border: 1px solid #2d3138;
+      font-size: .73rem; color: #9ca3af; margin-bottom: .6rem;
+    }
+
+    /* Char counter */
+    .char-row { display: flex; justify-content: space-between; align-items: baseline; }
+    .char-count { font-size: .68rem; color: #6b7280; }
+    .char-count.warn { color: #facc15; }
+    .char-count.over { color: #D90000; }
+
+    /* Action bar */
+    .action-bar {
+      display: flex; align-items: center; gap: .6rem;
+      padding: 1.1rem 1.5rem;
+      background: #0d0f11; border: 1px solid #2d3138;
+      border-radius: .875rem;
+      margin-top: 1rem; flex-wrap: wrap;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .55rem 1.1rem; border-radius: .5rem;
+      background: #D90000; color: #fff; border: none;
+      font-size: .8rem; font-weight: 700; cursor: pointer; text-decoration: none;
+      transition: background-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+    }
+    .btn-primary:hover { background: #f01010; box-shadow: 0 4px 14px rgba(217,0,0,.25); transform: translateY(-1px); }
+    .btn-primary:active { transform: none; box-shadow: none; }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .55rem 1rem; border-radius: .5rem;
+      background: #111315; color: #9ca3af;
+      border: 1px solid #2d3138; font-size: .8rem; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+    }
+    .btn-ghost:hover { background: #1a1d20; border-color: #3d4148; color: #d1d5db; }
+    .btn-ghost:focus-visible,
+    .btn-primary:focus-visible { outline: 2px solid #D90000; outline-offset: 3px; }
+
+    .action-hint { margin-left: auto; font-size: .72rem; color: #6b7280; }
+  </style>
 </head>
-<body class="bg-[#0a0a0a] text-gray-100 min-h-screen">
+<body>
   <%- include('../../partials/admin-header') %>
-  <main class="max-w-4xl mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6"><%= title %></h1>
-    <form method="POST" action="<%= post ? '/admin/posts/' + post.id : '/admin/posts' %>" enctype="multipart/form-data" class="space-y-5">
-      <div>
-        <label class="block text-sm text-gray-400 mb-1">Title *</label>
-        <input type="text" name="title" required value="<%= post ? post.title : '' %>" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-red-500">
-      </div>
-      <div>
-        <label class="block text-sm text-gray-400 mb-1">Excerpt</label>
-        <textarea name="excerpt" rows="2" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-red-500"><%= post ? post.excerpt || '' : '' %></textarea>
-      </div>
-      <div>
-        <label class="block text-sm text-gray-400 mb-1">Content (Markdown)</label>
-        <textarea name="content" rows="16" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white font-mono text-sm focus:outline-none focus:ring-1 focus:ring-red-500"><%= post ? post.content || '' : '' %></textarea>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm text-gray-400 mb-1">Category</label>
-          <select name="category_id" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-red-500">
-            <option value="">— None —</option>
-            <% categories.forEach(function(c) { %>
-              <option value="<%= c.id %>" <%= post && post.category_id == c.id ? 'selected' : '' %>><%= c.name %></option>
-            <% }) %>
-          </select>
-          <% if (!categories.length) { %>
-            <p class="mt-2 text-xs text-gray-500">No categories yet. <a href="/admin/categories" class="text-red-400 hover:underline">Create one</a>.</p>
-          <% } %>
+  <main>
+
+    <!-- Breadcrumb -->
+    <a href="/admin/posts" class="breadcrumb">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      All posts
+    </a>
+
+    <h1 class="page-title"><%= title %></h1>
+
+    <form method="POST" action="<%= post ? '/admin/posts/' + post.id : '/admin/posts' %>" enctype="multipart/form-data" novalidate>
+
+      <!-- ── Content ── -->
+      <div class="form-section">
+        <p class="form-section-label">Content</p>
+
+        <div class="field">
+          <label for="title">Title <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="title" name="title" required
+            value="<%= post ? post.title : '' %>"
+            placeholder="Post title…"
+            autocomplete="off" spellcheck="true">
         </div>
-        <div>
-          <label class="block text-sm text-gray-400 mb-1">Author</label>
-          <input type="text" name="author" value="<%= post ? post.author : 'Admin' %>" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-red-500">
+
+        <div class="field" style="margin-top:1rem">
+          <div class="char-row">
+            <label for="excerpt">Excerpt</label>
+            <span class="char-count" id="excerpt-count" aria-live="polite"></span>
+          </div>
+          <textarea id="excerpt" name="excerpt" rows="2"
+            placeholder="Short summary shown on listing pages…"><%= post ? post.excerpt || '' : '' %></textarea>
         </div>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm text-gray-400 mb-1">Status</label>
-          <select name="status" class="w-full bg-[#1a1a1a] border border-[#333] rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-red-500">
-            <option value="draft" <%= post && post.status === 'draft' ? 'selected' : '' %>>Draft</option>
-            <option value="published" <%= post && post.status === 'published' ? 'selected' : '' %>>Published</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm text-gray-400 mb-1">Cover Image</label>
-          <% if (post && post.cover_image) { %>
-            <input type="hidden" name="existing_cover" value="<%= post.cover_image %>">
-            <p class="text-xs text-gray-500 mb-1">Current: <%= post.cover_image %></p>
-          <% } %>
-          <input type="file" name="cover_image" accept="image/*" class="w-full text-sm text-gray-400">
-          <p class="mt-2 text-xs text-gray-500">This post’s uploads are stored in <code>public/uploads/posts/<%= post ? post.id : 'post-id' %>/</code>.</p>
+
+        <div class="field" style="margin-top:1rem">
+          <label for="content">Body <span class="req" aria-hidden="true">*</span> <span style="font-weight:400; color:#6b7280">(Markdown)</span></label>
+          <textarea id="content" name="content" rows="20"
+            class="mono" required
+            placeholder="Write your post in Markdown…"><%= post ? post.content || '' : '' %></textarea>
         </div>
       </div>
-      <div class="flex gap-3 pt-2">
-        <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-medium rounded-lg"><span class="material-icons text-base" aria-hidden="true">save</span>Save</button>
-        <a href="/admin/posts" class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#1a1a1a] border border-[#333] rounded-lg text-gray-300 hover:bg-[#222]"><span class="material-icons text-base" aria-hidden="true">close</span>Cancel</a>
+
+      <!-- ── Meta ── -->
+      <div class="form-section">
+        <p class="form-section-label">Meta</p>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="category_id">Category</label>
+            <select id="category_id" name="category_id">
+              <option value="">— None —</option>
+              <% categories.forEach(function(c) { %>
+                <option value="<%= c.id %>" <%= post && post.category_id == c.id ? 'selected' : '' %>><%= c.name %></option>
+              <% }) %>
+            </select>
+            <% if (!categories.length) { %>
+              <p class="field-hint">No categories yet. <a href="/admin/categories">Create one</a>.</p>
+            <% } %>
+          </div>
+          <div class="field">
+            <label for="author">Author</label>
+            <input type="text" id="author" name="author"
+              value="<%= post ? post.author : 'Admin' %>"
+              autocomplete="off">
+          </div>
+        </div>
+
+        <div class="field-grid" style="margin-top:1rem">
+          <div class="field">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+              <option value="draft"     <%= post && post.status === 'draft'     ? 'selected' : '' %>>Draft</option>
+              <option value="published" <%= post && post.status === 'published' ? 'selected' : '' %>>Published</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Cover image</label>
+            <% if (post && post.cover_image) { %>
+              <input type="hidden" name="existing_cover" value="<%= post.cover_image %>">
+              <div class="current-cover">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                Current: <%= post.cover_image %>
+              </div>
+            <% } %>
+            <div class="file-input-wrap">
+              <input type="file" name="cover_image" accept="image/*" aria-label="Upload cover image">
+              <div class="file-input-label">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <%= post && post.cover_image ? 'Replace image…' : 'Choose image…' %>
+              </div>
+            </div>
+            <p class="field-hint">Stored in <code>public/uploads/posts/<%= post ? post.id : 'post-id' %>/</code></p>
+          </div>
+        </div>
       </div>
+
+      <!-- ── Action bar ── -->
+      <div class="action-bar">
+        <button type="submit" class="btn-primary">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Save post
+        </button>
+        <a href="/admin/posts" class="btn-ghost">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          Cancel
+        </a>
+        <span class="action-hint">
+          <% if (post) { %>Last saved <%= new Date(post.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %><% } else { %>Unsaved draft<% } %>
+        </span>
+      </div>
+
     </form>
   </main>
+
+  <script>
+    // Excerpt char counter (160 chars ideal for meta)
+    const excerptEl = document.getElementById('excerpt');
+    const countEl   = document.getElementById('excerpt-count');
+    const MAX = 160;
+    function updateCount() {
+      const n = excerptEl.value.length;
+      countEl.textContent = n + ' / ' + MAX;
+      countEl.className = 'char-count' + (n > MAX ? ' over' : n > MAX * .85 ? ' warn' : '');
+    }
+    if (excerptEl) { excerptEl.addEventListener('input', updateCount); updateCount(); }
+
+    // File input label update
+    document.querySelectorAll('.file-input-wrap input[type="file"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const label = input.nextElementSibling.querySelector('span') || input.nextElementSibling;
+        if (input.files[0]) label.lastChild.textContent = input.files[0].name;
+      });
+    });
+  </script>
+
+  <script src="/js/main.js"></script>
 </body>
 </html>
